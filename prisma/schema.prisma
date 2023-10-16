@@ -19,7 +19,7 @@ model User {
   id        Int        @id @default(autoincrement())
   firstName String
   lastName  String
-  role      roleStatus
+  role      roleStatus @default(USER)
   email     String?    @unique
   username  String?    @unique
   password  String
@@ -83,7 +83,7 @@ model Category {
 
 model Cart {
   id        Int      @id @default(autoincrement())
-  quantiry  Int      @default(0)
+  quantiry  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   userId    Int

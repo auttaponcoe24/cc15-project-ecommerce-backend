@@ -1,0 +1,91 @@
+REGISTER
+POST /auth/register
+BODY firstName, lastName, emailorUsername, password, address
+RESPONSE
+201 { accessToken: String, user: {id : Number, firstName: String} }
+400 { message: String, emailOrUsernameExist: true}
+500 { message: String }
+
+LOGIN
+POST /auth/login
+BODY emailOrUsername, password
+RESPONSE
+200 { accessToken: String, user: { id: Number, firstName: String} }
+400 { message: String }
+500 { message: String }
+
+GET AUTHENTICATED user
+GET /auth/me
+HEADER AUTHORIZATION Bearer ACCESS_TOKEN
+RESPONSE
+200 { user: { id, firstName, lastName, ... } }
+401 { message: String }
+500 { message: String }
+
+CREATE CATEGORY => user.rold === admin (mock)
+
+CREATE PRODUCT => user.role === admin
+POST /product
+HEADER AUTHORIZATION Bearer ACCESS_TOKEN
+BODY name, images?, price
+RESPONSE
+201 { message: String}
+400 { message: String}
+401 { message: String}
+500 { message: String}
+
+GET PRODUCT ALL
+GET /product/all
+RESPONSE
+200 { productAll: {id, name, price, images}  }
+400 { message : String}
+500 { message : String}
+
+GET PRODUCT BY id
+GET /product/:productId
+RESPONSE
+200 { message : String, product } 
+400 { message : String } 
+500 { message : String } 
+
+REQUEST CART BY PRODUCT
+POST /cart/:productId
+HEADER AUTHORIZATION Bearer ACCESS_TOKEN
+RESPONSE
+201 { message: String, addCart }
+400 { message: String }
+401 { message: String }
+500 { message: String }
+
+GET PRODUCT IN CART
+GET /cart
+HEADER AUTHORIZATION Bearer ACCESS_TOKEN
+RESPONSE
+200 { message : String, cart } 
+400 { message : String } 
+500 { message : String } 
+
+DELETE PRODUCT IN CART
+DELETE /cart/:cartId
+HEADER AUTHORIZATION Bearer ACCESS_TOKEN
+RESPONSE
+200
+400
+500
+
+DELETE cartAll
+DELETE /cart/deleteCartAll
+HEADER AUTHORIZATION Bearer ACCESS_TOKEN
+RESPONSE
+200
+400
+500
+
+GET SUM ALL PRODUCT PRICE
+GET /cart/sumAllProduct
+HEADER AUTHORIZATION Bearer ACCESS_TOKEN
+RESPONSE
+200 { message: String, [result.quantiry, result.product.price]}
+400
+500
+
