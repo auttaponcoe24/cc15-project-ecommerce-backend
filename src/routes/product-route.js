@@ -7,7 +7,13 @@ const productController = require("../controllers/product-controller");
 const router = express.Router();
 
 router.post(
-	"/",
+	"/category",
+	authenticateMiddleware,
+	productController.createCategory
+);
+
+router.post(
+	"/:categoryId",
 	authenticateMiddleware,
 	uploadMiddleware.single("images"),
 	productController.createProduct

@@ -40,7 +40,6 @@ model Order {
   id         Int         @id @default(autoincrement())
   status     buyStatus
   slipImage  String?
-  date       DateTime    @db.Date()
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   userId     Int
@@ -83,7 +82,7 @@ model Category {
 
 model Cart {
   id        Int      @id @default(autoincrement())
-  quantiry  Int
+  amount    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   userId    Int

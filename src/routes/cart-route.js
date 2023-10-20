@@ -6,7 +6,7 @@ const cartController = require("../controllers/cart-controller");
 const router = express.Router();
 
 router.post(
-	"/:productId",
+	"/mycart/:productId",
 	authenticateMiddleware,
 	cartController.createProductMyCart
 );

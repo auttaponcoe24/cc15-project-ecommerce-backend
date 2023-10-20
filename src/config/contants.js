@@ -1,0 +1,5 @@
+exports.STATUS_INCART = "INCART";
+
+exports.STATUS_PENDDING = "PANDDING";
+
+exports.STATUS_SUCCESS = "SUCCESS";
