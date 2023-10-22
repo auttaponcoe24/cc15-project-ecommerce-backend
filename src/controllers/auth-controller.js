@@ -73,3 +73,28 @@ exports.login = async (req, res, next) => {
 exports.getMe = (req, res) => {
 	res.status(200).json({ user: req.user });
 };
+
+exports.editAccount = async (req, res, next) => {
+	try {
+		const findUser = await prisma.user.findFirst({
+			where: {
+				id: req.user.id,
+			},
+		});
+		console.log("=====>", findUser);
+
+		const editAccount = await prisma.user.update({
+			data: {
+				firstName: req.body.firstName,
+				lastName: req.body.lastName,
+				address: req.body.address,
+			},
+			where: {
+				id: findUser.id,
+			},
+		});
+		res.status(200).json({ editAccount });
+	} catch (err) {
+		next(err);
+	}
+};

@@ -9,4 +9,10 @@ router.post("/login", authController.login);
 
 router.get("/me", authenticateMiddleware, authController.getMe);
 
+router.patch(
+	"/editaccount",
+	authenticateMiddleware,
+	authController.editAccount
+);
+
 module.exports = router;

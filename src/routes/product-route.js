@@ -13,13 +13,21 @@ router.post(
 );
 
 router.post(
-	"/:categoryId",
+	"/categoryId",
 	authenticateMiddleware,
 	uploadMiddleware.single("images"),
 	productController.createProduct
 );
 
+router.delete(
+	"/:productId/delete",
+	authenticateMiddleware,
+	productController.deleteProduct
+);
+
 router.get("/all", productController.getAllProduct);
+
+router.get("/getcategory", productController.getAllCategory);
 
 router.get("/:productId", productController.getProductId);
 

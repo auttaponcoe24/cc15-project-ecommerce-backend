@@ -21,4 +21,10 @@ router.delete(
 
 router.delete("/:cartId", authenticateMiddleware, cartController.deleteCart);
 
+router.patch(
+	"/mycart/:cartId/amount",
+	authenticateMiddleware,
+	cartController.changeAmount
+);
+
 module.exports = router;

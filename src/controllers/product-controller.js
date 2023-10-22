@@ -73,10 +73,30 @@ exports.getAllProduct = async (req, res, next) => {
 				price: true,
 				images: true,
 				categoryId: true,
+				category: {
+					select: {
+						name: true,
+					},
+				},
 			},
 		});
 
 		res.status(200).json({ message: "get All product", productAll });
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.getAllCategory = async (req, res, next) => {
+	try {
+		const categoryAll = await prisma.category.findMany({
+			select: {
+				id: true,
+				name: true,
+			},
+		});
+
+		res.status(200).json({ fatchCategory: categoryAll });
 	} catch (err) {
 		next(err);
 	}
@@ -99,5 +119,24 @@ exports.getProductId = async (req, res, next) => {
 		res.status(200).json({ message: "Get Product By Id", productId });
 	} catch (err) {
 		console.log(err);
+	}
+};
+
+exports.deleteProduct = async (req, res, next) => {
+	try {
+		const { value, error } = checkProductIdSchema.validate(req.params);
+		if (error) {
+			return next(createError("not productid", 400));
+		}
+
+		const deleteProduct = await prisma.product.delete({
+			where: {
+				id: value.productId,
+			},
+		});
+
+		res.status(200).json({ deleteProduct });
+	} catch (err) {
+		next(err);
 	}
 };

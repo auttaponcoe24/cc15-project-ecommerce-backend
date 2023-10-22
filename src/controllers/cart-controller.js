@@ -25,7 +25,9 @@ exports.createProductMyCart = async (req, res, next) => {
 				productId: value.productId,
 				amount: req.body.amount,
 			},
-			include: { product: true },
+			include: {
+				product: true,
+			},
 		});
 
 		res.status(201).json({ message: "add product in cart", addCart });
@@ -42,10 +44,15 @@ exports.getProductInCart = async (req, res, next) => {
 				userId: req.user.id,
 				id: value.productId,
 			},
+			orderBy: {
+				createdAt: "desc",
+			},
 			include: {
 				product: true,
 			},
 		});
+
+		// console.log(cart);
 
 		const arrSumProduct = cart.map((item) => {
 			return item.amount * item.product.price;
@@ -57,6 +64,36 @@ exports.getProductInCart = async (req, res, next) => {
 		// console.log(sumTotalProduct);
 
 		res.status(200).json({ message: "cart", cart, sumTotalProduct });
+	} catch (err) {
+		next(err);
+	}
+};
+
+exports.changeAmount = async (req, res, next) => {
+	try {
+		const { value, error } = checkCartIdSchema.validate(req.params);
+		if (error) {
+			return next(createError("not found cartId", 400));
+		}
+
+		const cart = await prisma.cart.findFirst({
+			where: {
+				userId: req.user.id,
+				id: value.cartId,
+			},
+		});
+
+		// console.log("=====>", cart);
+
+		const amount = await prisma.cart.update({
+			data: {
+				amount: +req.body.amount,
+			},
+			where: {
+				id: cart.id,
+			},
+		});
+		res.status(200).json({ amount });
 	} catch (err) {
 		next(err);
 	}

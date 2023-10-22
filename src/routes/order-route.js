@@ -28,11 +28,7 @@ router.post(
 
 // admin
 
-router.get(
-	"/orderitem",
-	authenticateMiddleware,
-	orderController.getOrderItemAll
-);
+router.get("/orderitem", orderController.getOrderItemAll);
 
 router.patch(
 	"/confirmorder/success/:orderId",

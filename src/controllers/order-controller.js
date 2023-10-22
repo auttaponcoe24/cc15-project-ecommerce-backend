@@ -183,7 +183,7 @@ exports.createOrderItem = async (req, res, next) => {
 
 exports.getOrderItemAll = async (req, res, next) => {
 	try {
-		console.log(req.user, "<==============");
+		// console.log(req.user, "<==============");
 
 		const orderId = await prisma.order.findMany({
 			where: {
@@ -253,7 +253,6 @@ exports.getOrderItemAll = async (req, res, next) => {
 		// console.log(getOrderItemAll);
 
 		res.status(200).json({
-			// getOrderItems: getOrderItemAll,
 			order: orderId,
 		});
 	} catch (err) {
