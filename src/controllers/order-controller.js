@@ -259,3 +259,33 @@ exports.getOrderItemAll = async (req, res, next) => {
 		next(err);
 	}
 };
+
+exports.myOrder = async (req, res, next) => {
+	try {
+		const myOrder = await prisma.order.findMany({
+			where: {
+				userId: req.user.id,
+			},
+			orderBy: {
+				createdAt: "desc",
+			},
+			include: {
+				orderItems: {
+					select: {
+						amount: true,
+						price: true,
+						product: {
+							select: {
+								name: true,
+							},
+						},
+					},
+				},
+			},
+		});
+
+		res.status(200).json({ myOrder });
+	} catch (err) {
+		next(err);
+	}
+};

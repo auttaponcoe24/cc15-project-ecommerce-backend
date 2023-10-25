@@ -140,3 +140,45 @@ exports.deleteProduct = async (req, res, next) => {
 		next(err);
 	}
 };
+
+exports.editProduct = async (req, res, next) => {
+	try {
+		const { value, error } = checkProductSchema.validate(req.body);
+
+		// const { productId } = req.params;
+		// const productId = req.params.productId
+
+		console.log("==>", value);
+		if (!req.file) {
+			return next(createError("product image is requied", 400));
+		}
+
+		// const product = { categoryId: req.product.id };
+		if (req.file) {
+			value.images = await upload(req.file.path);
+		}
+
+		console.log("fff");
+		const findProduct = await prisma.product.update({
+			data: {
+				categoryId: value.categoryId,
+				name: value.name,
+				images: value.images,
+				price: value.price,
+			},
+			where: {
+				id: +req.params.productId,
+			},
+		});
+
+		console.log("-->>", findProduct);
+
+		res.status(200).json({ findProduct });
+	} catch (err) {
+		next(err);
+	} finally {
+		if (req.file) {
+			fs.unlink(req.file.path);
+		}
+	}
+};

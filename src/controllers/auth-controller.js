@@ -81,7 +81,7 @@ exports.editAccount = async (req, res, next) => {
 				id: req.user.id,
 			},
 		});
-		console.log("=====>", findUser);
+		// console.log("=====>", findUser);
 
 		const editAccount = await prisma.user.update({
 			data: {

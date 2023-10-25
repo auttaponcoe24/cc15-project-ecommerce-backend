@@ -31,4 +31,10 @@ router.get("/getcategory", productController.getAllCategory);
 
 router.get("/:productId", productController.getProductId);
 
+router.patch(
+	"/editproduct/:productId",
+	uploadMiddleware.single("images"),
+	productController.editProduct
+);
+
 module.exports = router;

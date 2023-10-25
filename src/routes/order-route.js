@@ -26,6 +26,8 @@ router.post(
 	orderController.createOrderItem
 );
 
+router.get("/myorder", authenticateMiddleware, orderController.myOrder);
+
 // admin
 
 router.get("/orderitem", orderController.getOrderItemAll);
