@@ -23,6 +23,7 @@ exports.checkOrderIdIdSchema = checkOrderIdIdSchema;
 const checkProductSchema = Joi.object({
 	categoryId: Joi.number().required(),
 	name: Joi.string().trim().required(),
+	detail: Joi.string().trim(),
 	images: Joi.string(),
 	price: Joi.number().required(),
 });

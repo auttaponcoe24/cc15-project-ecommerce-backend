@@ -13,9 +13,9 @@ exports.createCategory = async (req, res, next) => {
 	try {
 		const { value, error } = checkCategorySchema.validate(req.body);
 
-		if (error) {
-			return next(createError("not admin", 401));
-		}
+		// if (error) {
+		// 	return next(createError("not admin", 401));
+		// }
 
 		const category = await prisma.category.create({
 			data: {
@@ -50,6 +50,7 @@ exports.createProduct = async (req, res, next) => {
 			data: {
 				categoryId: value.categoryId,
 				name: value.name,
+				detail: value.detail,
 				images: value.images,
 				price: value.price,
 			},
@@ -70,6 +71,7 @@ exports.getAllProduct = async (req, res, next) => {
 			select: {
 				id: true,
 				name: true,
+				detail: true,
 				price: true,
 				images: true,
 				categoryId: true,
@@ -89,12 +91,7 @@ exports.getAllProduct = async (req, res, next) => {
 
 exports.getAllCategory = async (req, res, next) => {
 	try {
-		const categoryAll = await prisma.category.findMany({
-			select: {
-				id: true,
-				name: true,
-			},
-		});
+		const categoryAll = await prisma.category.findMany();
 
 		res.status(200).json({ fatchCategory: categoryAll });
 	} catch (err) {
