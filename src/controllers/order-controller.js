@@ -7,6 +7,7 @@ const {
 	STATUS_PENDDING,
 	STATUS_SUCCESS,
 } = require("../config/contants");
+const createError = require("../utils/create-error");
 
 exports.createOrder = async (req, res, next) => {
 	try {
@@ -185,7 +186,13 @@ exports.getOrderItemAll = async (req, res, next) => {
 	try {
 		// console.log(req.user, "<==============");
 
+		const orderAll = await prisma.order.findMany();
+		const { page, page_size } = req.query;
+
 		const orderId = await prisma.order.findMany({
+			// skip: Number(page),
+			skip: (Number(page) - 1) * Number(page_size),
+			take: Number(page_size),
 			where: {
 				OR: [{ status: STATUS_PENDDING }, { status: STATUS_SUCCESS }],
 			},
@@ -254,6 +261,7 @@ exports.getOrderItemAll = async (req, res, next) => {
 
 		res.status(200).json({
 			order: orderId,
+			orderAll,
 		});
 	} catch (err) {
 		next(err);
@@ -287,5 +295,23 @@ exports.myOrder = async (req, res, next) => {
 		res.status(200).json({ myOrder });
 	} catch (err) {
 		next(err);
+	}
+};
+
+exports.deleteOrderId = async (req, res, next) => {
+	const { orderId } = req.query;
+	try {
+		if (req.user?.role === "ADMIN") {
+			const deleteOrder = await prisma.order.delete({
+				where: {
+					id: Number(orderId),
+				},
+			});
+			res.status(200).json({ deleteOrder });
+		} else {
+			return next(createError("you are not admin", 500));
+		}
+	} catch (err) {
+		return next(err);
 	}
 };

@@ -38,4 +38,6 @@ router.patch(
 	orderController.cartSuccess
 );
 
+router.delete("/delete", authenticateMiddleware, orderController.deleteOrderId);
+
 module.exports = router;

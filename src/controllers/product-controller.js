@@ -66,34 +66,120 @@ exports.createProduct = async (req, res, next) => {
 };
 
 exports.getAllProduct = async (req, res, next) => {
+	const { page, page_size, keyword } = req.query;
+
 	try {
-		const productAll = await prisma.product.findMany({
-			select: {
-				id: true,
-				name: true,
-				detail: true,
-				price: true,
-				images: true,
-				categoryId: true,
-				category: {
-					select: {
-						name: true,
+		if (keyword !== "") {
+			const start_limit = (Number(page) - 1) * Number(page_size) + 1;
+			const productAll = await prisma.product.findMany({
+				skip: (Number(page) - 1) * Number(page_size),
+				take: Number(page_size),
+				select: {
+					id: true,
+					name: true,
+					detail: true,
+					price: true,
+					images: true,
+					categoryId: true,
+					category: {
+						select: {
+							name: true,
+						},
 					},
 				},
-			},
-		});
-
-		res.status(200).json({ message: "get All product", productAll });
+				orderBy: {
+					createdAt: "desc",
+				},
+				where: {
+					name: {
+						contains: keyword,
+					},
+				},
+			});
+			const totalProduct = await prisma.product.findMany({});
+			res.status(200).json({
+				message: "get All product",
+				productAll,
+				totalProduct: totalProduct.length,
+				start_limit: start_limit,
+			});
+		} else {
+			const start_limit = (Number(page) - 1) * Number(page_size) + 1;
+			const productAll = await prisma.product.findMany({
+				skip: (Number(page) - 1) * Number(page_size),
+				take: Number(page_size),
+				select: {
+					id: true,
+					name: true,
+					detail: true,
+					price: true,
+					images: true,
+					categoryId: true,
+					category: {
+						select: {
+							name: true,
+						},
+					},
+				},
+				orderBy: {
+					createdAt: "desc",
+				},
+			});
+			const totalProduct = await prisma.product.findMany({});
+			res.status(200).json({
+				message: "get All product",
+				productAll,
+				totalProduct: totalProduct.length,
+				start_limit,
+			});
+		}
 	} catch (err) {
 		next(err);
 	}
 };
 
 exports.getAllCategory = async (req, res, next) => {
-	try {
-		const categoryAll = await prisma.category.findMany();
+	const { keyword, page_current, page_size } = req.query;
 
-		res.status(200).json({ fatchCategory: categoryAll });
+	try {
+		const start_limit = (Number(page_current) - 1) * Number(page_size) + 1;
+		if (keyword === "" || undefined || null) {
+			const category = await prisma.category.findMany({
+				take: Number(page_size),
+				skip: (Number(page_current) - 1) * Number(page_size),
+				orderBy: {
+					id: "desc",
+				},
+			});
+			// return categoryAll;
+			const categoryAll = await prisma.category.findMany();
+			res.status(200).json({
+				message: "Fetch Category",
+				fetchCategory: category,
+				totalRecord: categoryAll.length,
+				start_limit,
+			});
+		} else {
+			const category = await prisma.category.findMany({
+				take: Number(page_size),
+				skip: (Number(page_current) - 1) * Number(page_size),
+				orderBy: {
+					id: "desc",
+				},
+				where: {
+					name: {
+						contains: keyword,
+					},
+				},
+			});
+			const categoryAll = await prisma.category.findMany();
+			res.status(200).json({
+				message: "Fetch Category",
+				fetchCategory: category,
+				totalRecord: categoryAll.length,
+				start_limit,
+			});
+		}
 	} catch (err) {
 		next(err);
 	}
