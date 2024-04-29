@@ -29,10 +29,15 @@ router.get("/all", productController.getAllProduct);
 
 router.get("/getcategory", productController.getAllCategory);
 
-router.get("/:productId", productController.getProductId);
+router.get("/get-productId", productController.getProductId);
 
+// router.patch(
+// 	"/editproduct/:productId",
+// 	uploadMiddleware.single("images"),
+// 	productController.editProduct
+// );
 router.patch(
-	"/editproduct/:productId",
+	"/edit-product",
 	uploadMiddleware.single("images"),
 	productController.editProduct
 );

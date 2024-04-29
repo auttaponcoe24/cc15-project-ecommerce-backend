@@ -186,83 +186,103 @@ exports.getOrderItemAll = async (req, res, next) => {
 	try {
 		// console.log(req.user, "<==============");
 
-		const orderAll = await prisma.order.findMany();
-		const { page, page_size } = req.query;
+		const { page_current, page_size, keyword } = req.query;
+		const start_limit = (Number(page_current) - 1) * Number(page_size) + 1;
 
-		const orderId = await prisma.order.findMany({
-			// skip: Number(page),
-			skip: (Number(page) - 1) * Number(page_size),
-			take: Number(page_size),
-			where: {
-				OR: [{ status: STATUS_PENDDING }, { status: STATUS_SUCCESS }],
-			},
-			orderBy: {
-				createdAt: "desc",
-			},
-			include: {
-				user: {
-					select: {
-						firstName: true,
-						lastName: true,
-						address: true,
+		if (keyword !== "") {
+			const orderId = await prisma.order.findMany({
+				skip: (Number(page_current) - 1) * Number(page_size),
+				take: Number(page_size),
+				where: {
+					OR: [{ status: STATUS_PENDDING }, { status: STATUS_SUCCESS }],
+					user: {
+						firstName: {
+							contains: keyword,
+						},
 					},
 				},
-				orderItems: {
-					select: {
-						id: true,
-						price: true,
-						amount: true,
-						product: {
-							select: {
-								name: true,
-								images: true,
-								price: true,
+				orderBy: {
+					createdAt: "desc",
+				},
+				include: {
+					user: {
+						select: {
+							firstName: true,
+							lastName: true,
+							address: true,
+						},
+					},
+					orderItems: {
+						select: {
+							id: true,
+							price: true,
+							amount: true,
+							product: {
+								select: {
+									name: true,
+									images: true,
+									price: true,
+								},
 							},
 						},
 					},
 				},
-			},
-		});
-		// console.log("=========>", orderId);
-
-		// const getOrderItemAll = await prisma.orderItem.findMany({
-		// 	where: {
-		// 		orderId: orderId.id,
-		// 	},
-		// 	orderBy: {
-		// 		createdAt: "desc",
-		// 	},
-		// 	include: {
-		// 		order: {
-		// 			select: {
-		// 				id: true,
-		// 				status: true,
-		// 				slipImage: true,
-		// 				createdAt: true,
-		// 				user: {
-		// 					select: {
-		// 						firstName: true,
-		// 						lastName: true,
-		// 						address: true,
-		// 					},
-		// 				},
-		// 			},
-		// 		},
-		// 		product: {
-		// 			select: {
-		// 				name: true,
-		// 				images: true,
-		// 				price: true,
-		// 			},
-		// 		},
-		// 	},
-		// });
-		// console.log(getOrderItemAll);
-
-		res.status(200).json({
-			order: orderId,
-			orderAll,
-		});
+			});
+			const orderAll = await prisma.order.findMany({
+				where: {
+					user: {
+						firstName: {
+							contains: keyword,
+						},
+					},
+				},
+			});
+			res.status(200).json({
+				order: orderId,
+				record_total: orderAll.length(),
+				start_limit,
+			});
+		} else {
+			const orderAll = await prisma.order.findMany();
+			const orderId = await prisma.order.findMany({
+				skip: (Number(page_current) - 1) * Number(page_size),
+				take: Number(page_size),
+				where: {
+					OR: [{ status: STATUS_PENDDING }, { status: STATUS_SUCCESS }],
+				},
+				orderBy: {
+					createdAt: "desc",
+				},
+				include: {
+					user: {
+						select: {
+							firstName: true,
+							lastName: true,
+							address: true,
+						},
+					},
+					orderItems: {
+						select: {
+							id: true,
+							price: true,
+							amount: true,
+							product: {
+								select: {
+									name: true,
+									images: true,
+									price: true,
+								},
+							},
+						},
+					},
+				},
+			});
+			res.status(200).json({
+				order: orderId,
+				record_total: orderAll.length(),
+				start_limit,
+			});
+		}
 	} catch (err) {
 		next(err);
 	}

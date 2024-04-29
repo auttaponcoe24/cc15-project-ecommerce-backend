@@ -96,7 +96,13 @@ exports.getAllProduct = async (req, res, next) => {
 					},
 				},
 			});
-			const totalProduct = await prisma.product.findMany({});
+			const totalProduct = await prisma.product.findMany({
+				where: {
+					name: {
+						contains: keyword,
+					},
+				},
+			});
 			res.status(200).json({
 				message: "get All product",
 				productAll,
@@ -172,7 +178,13 @@ exports.getAllCategory = async (req, res, next) => {
 					},
 				},
 			});
-			const categoryAll = await prisma.category.findMany();
+			const categoryAll = await prisma.category.findMany({
+				where: {
+					name: {
+						contains: keyword,
+					},
+				},
+			});
 			res.status(200).json({
 				message: "Fetch Category",
 				fetchCategory: category,
@@ -187,21 +199,23 @@ exports.getAllCategory = async (req, res, next) => {
 
 exports.getProductId = async (req, res, next) => {
 	try {
-		const { value, error } = checkProductIdSchema.validate(req.params);
+		// const { value, error } = checkProductIdSchema.validate(req.query);
+		const { productId } = req.query;
 
-		if (error) {
-			return next(error);
-		}
+		// if (error) {
+		// 	return next(error);
+		// }
 
 		// const productId = +req.params.productId;
-		const productId = await prisma.product.findUnique({
+		const productById = await prisma.product.findFirst({
 			where: {
-				id: value.productId,
+				id: Number(productId),
 			},
 		});
-		res.status(200).json({ message: "Get Product By Id", productId });
+		res.status(200).json({ message: "Get Product By Id", productById });
 	} catch (err) {
 		console.log(err);
+		next(err);
 	}
 };
 
@@ -227,36 +241,44 @@ exports.deleteProduct = async (req, res, next) => {
 exports.editProduct = async (req, res, next) => {
 	try {
 		const { value, error } = checkProductSchema.validate(req.body);
+		const { productId } = req.query;
 
 		// const { productId } = req.params;
 		// const productId = req.params.productId
 
-		console.log("==>", value);
-		if (!req.file) {
-			return next(createError("product image is requied", 400));
-		}
+		// console.log("==>", value);
+		// if (!req.file) {
+		// 	return next(createError("product image is requied", 400));
+		// }
+		const findProductId = await prisma.product.findFirst({
+			where: {
+				id: Number(productId),
+			},
+		});
 
 		// const product = { categoryId: req.product.id };
 		if (req.file) {
 			value.images = await upload(req.file.path);
 		}
 
-		console.log("fff");
-		const findProduct = await prisma.product.update({
+		// console.log("fff");
+		const editProduct = await prisma.product.update({
 			data: {
 				categoryId: value.categoryId,
 				name: value.name,
 				images: value.images,
 				price: value.price,
+				detail: value.detail,
 			},
 			where: {
-				id: +req.params.productId,
+				id: Number(productId),
+				// id: findProductId.id,
 			},
 		});
 
-		console.log("-->>", findProduct);
+		// console.log("-->>", editProduct);
 
-		res.status(200).json({ findProduct });
+		res.status(201).json({ editProduct });
 	} catch (err) {
 		next(err);
 	} finally {
