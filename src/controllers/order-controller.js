@@ -239,7 +239,7 @@ exports.getOrderItemAll = async (req, res, next) => {
 			});
 			res.status(200).json({
 				order: orderId,
-				record_total: orderAll.length(),
+				record_total: orderAll.length,
 				start_limit,
 			});
 		} else {
@@ -279,7 +279,7 @@ exports.getOrderItemAll = async (req, res, next) => {
 			});
 			res.status(200).json({
 				order: orderId,
-				record_total: orderAll.length(),
+				record_total: orderAll.length,
 				start_limit,
 			});
 		}
@@ -312,7 +312,7 @@ exports.myOrder = async (req, res, next) => {
 			},
 		});
 
-		res.status(200).json({ myOrder });
+		res.status(200).json({ myOrder, total_record: myOrder.length });
 	} catch (err) {
 		next(err);
 	}

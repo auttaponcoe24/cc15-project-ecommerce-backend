@@ -63,7 +63,14 @@ exports.getProductInCart = async (req, res, next) => {
 		}, 0);
 		// console.log(sumTotalProduct);
 
-		res.status(200).json({ message: "cart", cart, sumTotalProduct });
+		res
+			.status(200)
+			.json({
+				message: "cart",
+				cart,
+				sumTotalProduct,
+				total_record: cart.length,
+			});
 	} catch (err) {
 		next(err);
 	}

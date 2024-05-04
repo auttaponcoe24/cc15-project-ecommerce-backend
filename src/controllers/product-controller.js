@@ -205,6 +205,9 @@ exports.getProductId = async (req, res, next) => {
 		// if (error) {
 		// 	return next(error);
 		// }
+		if (productId === null) {
+			return next();
+		}
 
 		// const productId = +req.params.productId;
 		const productById = await prisma.product.findFirst({
